@@ -6,15 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.google.android.material.snackbar.Snackbar
-import com.ubaya.todoapp.Model.Todo
 import com.ubaya.todoapp.R
 import com.ubaya.todoapp.ViewModel.DetailTodoViewModel
 import kotlinx.android.synthetic.main.fragment_create_todo.*
 
-class CreateTodoFragment : Fragment() {
+class EditTodoFragment : Fragment() {
+    private lateinit var viewModel: DetailTodoViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,25 +24,34 @@ class CreateTodoFragment : Fragment() {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_create_todo, container, false)
     }
-
-    private lateinit var viewModel: DetailTodoViewModel
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel =
-            ViewModelProvider(this).get(DetailTodoViewModel::class.java)
-
+        viewModel = ViewModelProvider(this).get(DetailTodoViewModel::class.java)
+        val uuid = EditTodoFragmentArgs.fromBundle(requireArguments()).uuid
+        viewModel.fetch(uuid)
+        observeViewModel()
+        txtJudulTodo.text = "Edit Todo"
+        btnAdd.text = "Save Changes"
         btnAdd.setOnClickListener {
-            var radio =
+            val radio =
                 view.findViewById<RadioButton>(radioGroupPriority.checkedRadioButtonId)
-
-            var todo = Todo(txtTitle.text.toString(),
-                txtNotes.text.toString(), radio.tag.toString().toInt())
-            val list = listOf(todo)
-            viewModel.addTodo(list)
-            Snackbar.make(view, "Todo Added!", Snackbar.LENGTH_LONG).show()
+            viewModel.update(txtTitle.text.toString(), txtNotes.text.toString(),
+                radio.tag.toString().toInt(), uuid)
+            Snackbar.make(view, "Todo Updated!", Snackbar.LENGTH_LONG).show()
             Navigation.findNavController(it).popBackStack()
         }
+
+    }
+    fun observeViewModel() {
+        viewModel.todoLD.observe(viewLifecycleOwner, Observer {
+            txtTitle.setText(it.title)
+            txtNotes.setText(it.notes)
+            when (it.priority) {
+                1 -> radioLow.isChecked = true
+                2 -> radioMedium.isChecked = true
+                else -> radioHigh.isChecked = true
+            }
+        })
     }
 
 }
