@@ -1,11 +1,10 @@
-package com.ubaya.todoapp.Model
+package com.ubaya.todoapp.model
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.ubaya.todoapp.Util.MIGRATION_1_2
-import com.ubaya.todoapp.Util.MIGRATION_1_3
+import com.ubaya.todoapp.util.MIGRATION_1_3
 
 @Database(entities = arrayOf(Todo::class), version =  3)
 abstract class TodoDatabase: RoomDatabase() {

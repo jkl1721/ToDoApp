@@ -1,4 +1,4 @@
-package com.ubaya.todoapp.View
+package com.ubaya.todoapp.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,9 +9,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.ubaya.todoapp.Model.Todo
+import com.ubaya.todoapp.model.Todo
 import com.ubaya.todoapp.R
-import com.ubaya.todoapp.ViewModel.ListTodoViewModel
+import com.ubaya.todoapp.view.TodoListFragmentDirections
+import com.ubaya.todoapp.viewModel.ListTodoViewModel
 import kotlinx.android.synthetic.main.fragment_todo_list.*
 
 class TodoListFragment : Fragment() {

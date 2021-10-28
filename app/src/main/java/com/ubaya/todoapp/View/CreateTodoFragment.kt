@@ -1,4 +1,4 @@
-package com.ubaya.todoapp.View
+package com.ubaya.todoapp.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,9 +9,9 @@ import android.widget.RadioButton
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.google.android.material.snackbar.Snackbar
-import com.ubaya.todoapp.Model.Todo
+import com.ubaya.todoapp.model.Todo
 import com.ubaya.todoapp.R
-import com.ubaya.todoapp.ViewModel.DetailTodoViewModel
+import com.ubaya.todoapp.viewModel.DetailTodoViewModel
 import kotlinx.android.synthetic.main.fragment_create_todo.*
 
 class CreateTodoFragment : Fragment() {

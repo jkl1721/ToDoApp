@@ -1,28 +1,35 @@
-package com.ubaya.todoapp.View
+package com.ubaya.todoapp.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.google.android.material.snackbar.Snackbar
+import com.ubaya.todoapp.model.Todo
 import com.ubaya.todoapp.R
-import com.ubaya.todoapp.ViewModel.DetailTodoViewModel
+import com.ubaya.todoapp.view.EditTodoFragmentArgs
+import com.ubaya.todoapp.viewModel.DetailTodoViewModel
+import com.ubaya.todoapp.databinding.FragmentEditTodoBinding
 import kotlinx.android.synthetic.main.fragment_create_todo.*
 
-class EditTodoFragment : Fragment() {
+class EditTodoFragment : Fragment(),RadioClick,TodoSaveChangesClick {
     private lateinit var viewModel: DetailTodoViewModel
-
+    private lateinit var dataBinding: FragmentEditTodoBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_create_todo, container, false)
+        dataBinding = DataBindingUtil.inflate<FragmentEditTodoBinding>(inflater, R.layout.fragment_edit_todo, container, false)
+        return dataBinding.root
+    }
+    override fun onRadioClick(v: View, priority: Int, obj: Todo) {
+        obj.priority = v.tag.toString().toInt()
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -30,27 +37,38 @@ class EditTodoFragment : Fragment() {
         val uuid = EditTodoFragmentArgs.fromBundle(requireArguments()).uuid
         viewModel.fetch(uuid)
         observeViewModel()
+        dataBinding.radioListener=this
+        dataBinding.listener=this
         txtJudulTodo.text = "Edit Todo"
         btnAdd.text = "Save Changes"
-        btnAdd.setOnClickListener {
-            val radio =
-                view.findViewById<RadioButton>(radioGroupPriority.checkedRadioButtonId)
-            viewModel.update(txtTitle.text.toString(), txtNotes.text.toString(),
-                radio.tag.toString().toInt(), uuid)
-            Snackbar.make(view, "Todo Updated!", Snackbar.LENGTH_LONG).show()
-            Navigation.findNavController(it).popBackStack()
-        }
+//        btnAdd.setOnClickListener {
+//            val radio =
+//                view.findViewById<RadioButton>(radioGroupPriority.checkedRadioButtonId)
+//            viewModel.update(txtTitle.text.toString(), txtNotes.text.toString(),
+//                radio.tag.toString().toInt(), uuid)
+//            Snackbar.make(view, "Todo Updated!", Snackbar.LENGTH_LONG).show()
+//            Navigation.findNavController(it).popBackStack()
+//        }
 
     }
-    fun observeViewModel() {
+    override fun onTodoSaveChangesClick(v: View, obj: Todo) {
+        viewModel.update(obj.title, obj.notes, obj.priority, obj.uuid)
+        Snackbar.make(v, "Todo Updated!", Snackbar.LENGTH_LONG).show()
+        Navigation.findNavController(v).popBackStack()
+    }
+    fun observeViewModel(){
         viewModel.todoLD.observe(viewLifecycleOwner, Observer {
-            txtTitle.setText(it.title)
-            txtNotes.setText(it.notes)
-            when (it.priority) {
-                1 -> radioLow.isChecked = true
-                2 -> radioMedium.isChecked = true
-                else -> radioHigh.isChecked = true
-            }
+            dataBinding.todo = it
+//            txtTitle.setText(it.title)
+//            txtNotes.setText(it.notes)
+//
+//            if(it.priority == 3){
+//                radioHigh.isChecked = true
+//            }else if(it.priority == 2){
+//                radioMedium.isChecked = true
+//            }else {
+//                radioLow.isChecked = true
+//            }
         })
     }
 
